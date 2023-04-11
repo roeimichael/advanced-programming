@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Set;
 
 public class MainTrain {
 	
@@ -45,44 +46,47 @@ public class MainTrain {
 				outToServer.println(text);
 				outToServer.flush();
 				String response=in.next();
-				if(response==null || !response.equals(rev)) 
+				
+				if(response==null || !response.equals(rev)) { 
 					System.out.println("problem getting the right response from your server, cannot continue the test (-25)");
+				}
 				in.close();
 				outToServer.close();
 				server.close();
 			}catch (Exception e){
 				System.out.println("Exception was thrown when running a client (-25)");
+				System.out.println("client thread "+ Thread.currentThread().getName()+" had an exception:");
+				e.printStackTrace();
 			}
 		}).start();
 	}
 	
-//	public static boolean testServer() {
-//		boolean ok=true;
-//		Random r=new Random();
-//		int port=6000+r.nextInt(1000);
-//		MyServer s=new MyServer(port, new ClientHandler1(),3);
-//		int c = Thread.activeCount();
-//		s.start(); // runs in the background
-//		try {
-//			client1(port);
-//			client1(port);
-//			client1(port);
-//			client1(port);
-//		}catch(Exception e) {
-//			System.out.println("some exception was thrown while testing your server, cannot continue the test (-100)");			
-//			ok=false;
-//		}
-//		try {Thread.sleep(2000);} catch (InterruptedException e) {}
-//		s.close();
-//		
-//		try {Thread.sleep(2000);} catch (InterruptedException e) {}
-//		
-//		if (Thread.activeCount()!=c) {
-//			System.out.println("you have a thread open after calling close method (-100)");
-//			ok=false;
-//		}
-//		return ok;
-//	}
+	public static boolean testServer() {
+		boolean ok=true;
+		Random r=new Random();
+		int port=8080;
+		MyServer s=new MyServer(port, new ClientHandler1(),3);
+		int c = Thread.activeCount();
+		s.start(); // runs in the background
+		try {
+			client1(port);
+			client1(port);
+			client1(port);
+			client1(port);
+		}catch(Exception e) {
+			System.out.println("some exception was thrown while testing your server, cannot continue the test (-100)");			
+			ok=false;
+		}
+		try {Thread.sleep(2000);} catch (InterruptedException e) {}
+		s.close();
+		
+		try {Thread.sleep(2000);} catch (InterruptedException e) {}
+		
+		if (Thread.activeCount()!=c) {
+			System.out.println("you have a thread open after calling close method (-100)");
+		}
+		return ok;
+	}
 	
 
 	public static String[] writeFile(String name) {
@@ -164,10 +168,10 @@ public class MainTrain {
 //	}
 	
 	public static void main(String[] args) {
-//		if(testServer()) {
+		if(testServer()) {
 		testDM();
 //			testBSCH();			
-//		}
+		}
 		System.out.println("done");
 	}
 
