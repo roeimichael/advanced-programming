@@ -27,6 +27,17 @@ public class MyServer {
         new Thread(this::startsServer).start();
     }
 
+    private void clientMethod(Socket client) {
+    	try {
+        	Class<? extends ClientHandler> chClass = this.ch.getClass();
+        	ClientHandler chNew = chClass.getDeclaredConstructor().newInstance();
+        	chNew.handleClient(client.getInputStream(), client.getOutputStream());
+        	chNew.close();
+            client.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
     private void startsServer() {
         try {
             ServerSocket server = new ServerSocket(port);
@@ -34,18 +45,7 @@ public class MyServer {
             while (!stop) {
                 try {
                     Socket client = server.accept();
-                    Runnable task = () -> {
-                        try {
-                        	Class<? extends ClientHandler> chClass = this.ch.getClass();
-                        	ClientHandler chNew = chClass.getDeclaredConstructor().newInstance();
-                        	chNew.handleClient(client.getInputStream(), client.getOutputStream());
-                        	chNew.close();
-                            client.close();
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    };
-                    threadPool.execute(task);
+                    threadPool.execute(()->clientMethod(client));
                 } catch (SocketTimeoutException e) {
                 }
             }

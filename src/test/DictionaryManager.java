@@ -34,7 +34,7 @@ public class DictionaryManager {
         {
         	if (bookToDictionaryMap.get(book) == null) 
         	{
-        		Dictionary newdictionary = new Dictionary(books);
+        		Dictionary newdictionary = new Dictionary(book);
         		bookToDictionaryMap.put(book,newdictionary);
         	}
         	res = res || bookToDictionaryMap.get(book).query(word);
@@ -46,7 +46,7 @@ public class DictionaryManager {
         String word = args[args.length - 1];
         String[] books = Arrays.copyOfRange(args, 0, args.length - 1);
         Boolean res = false;
-
+        System.out.println("in current DM we have "+bookToDictionaryMap.size()+" dictionaries");
         for (String book : books) {
             res = res || bookToDictionaryMap.get(book).challenge(word);
         }

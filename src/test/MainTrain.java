@@ -8,7 +8,6 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Random;
 import java.util.Scanner;
-import java.util.Set;
 
 public class MainTrain {
 	
@@ -115,13 +114,13 @@ public class MainTrain {
 		DictionaryManager dm=DictionaryManager.get();
 		
 		if(!dm.query("t1.txt","t2.txt",t2[4]))
-			System.out.println("problem for Dictionary Manager query (-5)");
+			System.out.println("problem for Dictionary Manager query 1 (-5)");
 		if(!dm.query("t1.txt","t2.txt",t1[9]))
-			System.out.println("problem for Dictionary Manager query (-5)");
+			System.out.println("problem for Dictionary Manager query 2 (-5)");
 		if(dm.query("t1.txt","t3.txt","2"+t3[2]))
-			System.out.println("problem for Dictionary Manager query (-5)");
+			System.out.println("problem for Dictionary Manager query 3 (-5)");
 		if(dm.query("t2.txt","t3.txt","3"+t2[5]))
-			System.out.println("problem for Dictionary Manager query (-5)");
+			System.out.println("problem for Dictionary Manager query 4 (-5)");
 		if(!dm.challenge("t1.txt","t2.txt","t3.txt",t3[2]))
 			System.out.println("problem for Dictionary Manager challenge (-5)");
 		if(dm.challenge("t2.txt","t3.txt","t1.txt","3"+t2[5]))
@@ -132,7 +131,7 @@ public class MainTrain {
 		
 	}
 	
-	public static void runClient(int port,String query,boolean result) {
+	public static void runClient(int port,String query,boolean result, int clientNum) {
 		try {
 			Socket server=new Socket("localhost",port);
 			PrintWriter out=new PrintWriter(server.getOutputStream());
@@ -140,8 +139,12 @@ public class MainTrain {
 			out.println(query);
 			out.flush();
 			String res=in.next();
-			if((result && !res.equals("true")) || (!result && !res.equals("false")))
-				System.out.println("problem getting the right answer from the server (-10)");
+			String resultString = "";
+			if(result) {resultString = "true";} else {resultString = "false";}
+			if((result && !res.equals("true")) || (!result && !res.equals("false"))) {
+				System.out.println("expected "+resultString+" but got "+res );
+				System.out.println("problem getting the right answer from the server (-10) int client "+clientNum);
+			}
 			in.close();
 			out.close();
 			server.close();
@@ -149,30 +152,31 @@ public class MainTrain {
 			System.out.println("your code ran into an IOException (-10)");
 		}
 	}
-//	
-//	public static void testBSCH() {
-//		String s1[]=writeFile("s1.txt");
-//		String s2[]=writeFile("s2.txt");
-//		
-//		Random r=new Random();
-//		int port=6000+r.nextInt(1000);
-//		MyServer s=new MyServer(port, new BookScrabbleHandler(),1);
-//		s.start();
-//		runClient(port, "Q,s1.txt,s2.txt,"+s1[1], true);
-//		runClient(port, "Q,s1.txt,s2.txt,"+s2[4], true);
-//		runClient(port, "Q,s1.txt,s2.txt,2"+s1[1], false);
-//		runClient(port, "Q,s1.txt,s2.txt,3"+s2[4], false);
-//		runClient(port, "C,s1.txt,s2.txt,"+s1[9], true);
-//		runClient(port, "C,s1.txt,s2.txt,#"+s2[1], false);
-//		s.close();
-//	}
+	
+	public static void testBSCH() {
+		String s1[]=writeFile("s1.txt");
+		String s2[]=writeFile("s2.txt");
+		
+		Random r=new Random();
+		int port=6000+r.nextInt(1000);
+		MyServer s=new MyServer(port, new BookScrabbleHandler(),1);
+		s.start();
+		runClient(port, "Q,s1.txt,s2.txt,"+s1[1], true,1);
+		runClient(port, "Q,s1.txt,s2.txt,"+s2[4], true,2);
+		runClient(port, "Q,s1.txt,s2.txt,2"+s1[1], false,3);
+		runClient(port, "Q,s1.txt,s2.txt,3"+s2[4], false,4);
+		runClient(port, "C,s1.txt,s2.txt,"+s1[9], true,5);
+		runClient(port, "C,s1.txt,s2.txt,#"+s2[1], false,6);
+		s.close();
+	}
 	
 	public static void main(String[] args) {
 		if(testServer()) {
-		testDM();
-//			testBSCH();			
+			testDM();
+			testBSCH();			
 		}
 		System.out.println("done");
+		
 	}
 
 }
