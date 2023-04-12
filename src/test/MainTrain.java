@@ -9,6 +9,7 @@ import java.net.Socket;
 import java.util.Random;
 import java.util.Scanner;
 
+
 public class MainTrain {
 	
 	public static class ClientHandler1 implements ClientHandler{

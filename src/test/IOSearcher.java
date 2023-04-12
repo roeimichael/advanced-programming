@@ -3,6 +3,12 @@ package test;
 import java.io.File;
 import java.util.Scanner;
 
+interface FileSearcher {
+	public boolean search(String word, String...fileNames);	
+	public void stop();
+
+}
+
 public class IOSearcher implements FileSearcher{
 
 	boolean stopMe;

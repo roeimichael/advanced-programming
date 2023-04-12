@@ -46,11 +46,14 @@ public class DictionaryManager {
         String word = args[args.length - 1];
         String[] books = Arrays.copyOfRange(args, 0, args.length - 1);
         Boolean res = false;
-        System.out.println("in current DM we have "+bookToDictionaryMap.size()+" dictionaries");
         for (String book : books) {
             res = res || bookToDictionaryMap.get(book).challenge(word);
         }
+
         return res;
     }
+    
+    
+   
 
 }

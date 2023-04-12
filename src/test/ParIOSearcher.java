@@ -36,7 +36,8 @@ public class ParIOSearcher implements FileSearcher{
 				found|=f.get();
 			} catch (InterruptedException | ExecutionException e) {}
 		}
-		
+		stop();
+		es=Executors.newCachedThreadPool();
 		return found;
 	}
 	
