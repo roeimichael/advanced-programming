@@ -8,6 +8,7 @@ import java.io.PrintWriter;
 import java.net.Socket;
 import java.util.Random;
 import java.util.Scanner;
+import java.util.Set;
 
 public class MainTrain {
 	
@@ -51,38 +52,51 @@ public class MainTrain {
 				outToServer.close();
 				server.close();
 			}catch (Exception e){
+				e.printStackTrace();
 				System.out.println("Exception was thrown when running a client (-25)");
 			}
 		}).start();
 	}
 	
-//	public static boolean testServer() {
-//		boolean ok=true;
-//		Random r=new Random();
-//		int port=6000+r.nextInt(1000);
-//		MyServer s=new MyServer(port, new ClientHandler1(),3);
-//		int c = Thread.activeCount();
-//		s.start(); // runs in the background
-//		try {
-//			client1(port);
-//			client1(port);
-//			client1(port);
-//			client1(port);
-//		}catch(Exception e) {
-//			System.out.println("some exception was thrown while testing your server, cannot continue the test (-100)");			
-//			ok=false;
-//		}
-//		try {Thread.sleep(2000);} catch (InterruptedException e) {}
-//		s.close();
-//		
-//		try {Thread.sleep(2000);} catch (InterruptedException e) {}
-//		
-//		if (Thread.activeCount()!=c) {
-//			System.out.println("you have a thread open after calling close method (-100)");
-//			ok=false;
-//		}
-//		return ok;
-//	}
+	public static boolean testServer() {
+		boolean ok=true;
+		Random r=new Random();
+		int port=6000+r.nextInt(1000);
+		MyServer s=new MyServer(port, new ClientHandler1(),3);
+		int c = Thread.activeCount();
+		s.start(); // runs in the background
+		try {
+			client1(port);
+			client1(port);
+			client1(port);
+			client1(port);
+		}catch(Exception e) {
+			System.out.println("some exception was thrown while testing your server, cannot continue the test (-100)");			
+			ok=false;
+		}
+		try {Thread.sleep(2000);} catch (InterruptedException e) {}
+		System.out.println(c);
+		System.out.println(Thread.activeCount());
+		Set<Thread> threadSet = Thread.getAllStackTraces().keySet();
+        for (Thread x : threadSet) 
+            System.out.println(x.getName());
+
+		s.close();
+		
+		
+		System.out.println(c);
+		System.out.println(Thread.activeCount());
+		Set<Thread> threadSet1 = Thread.getAllStackTraces().keySet();
+        for (Thread x : threadSet1) 
+            System.out.println(x.getName());
+		try {Thread.sleep(2000);} catch (InterruptedException e) {}
+		
+		if (Thread.activeCount()!=c) {
+			System.out.println("you have a thread open after calling close method (-100)");
+			ok=false;
+		}
+		return ok;
+	}
 	
 
 	public static String[] writeFile(String name) {
@@ -145,29 +159,29 @@ public class MainTrain {
 			System.out.println("your code ran into an IOException (-10)");
 		}
 	}
-//	
-//	public static void testBSCH() {
-//		String s1[]=writeFile("s1.txt");
-//		String s2[]=writeFile("s2.txt");
-//		
-//		Random r=new Random();
-//		int port=6000+r.nextInt(1000);
-//		MyServer s=new MyServer(port, new BookScrabbleHandler(),1);
-//		s.start();
-//		runClient(port, "Q,s1.txt,s2.txt,"+s1[1], true);
-//		runClient(port, "Q,s1.txt,s2.txt,"+s2[4], true);
-//		runClient(port, "Q,s1.txt,s2.txt,2"+s1[1], false);
-//		runClient(port, "Q,s1.txt,s2.txt,3"+s2[4], false);
-//		runClient(port, "C,s1.txt,s2.txt,"+s1[9], true);
-//		runClient(port, "C,s1.txt,s2.txt,#"+s2[1], false);
-//		s.close();
-//	}
+	
+	public static void testBSCH() {
+		String s1[]=writeFile("s1.txt");
+		String s2[]=writeFile("s2.txt");
+		
+		Random r=new Random();
+		int port=6000+r.nextInt(1000);
+		MyServer s=new MyServer(port, new BookScrabbleHandler(),1);
+		s.start();
+		runClient(port, "Q,s1.txt,s2.txt,"+s1[1], true);
+		runClient(port, "Q,s1.txt,s2.txt,"+s2[4], true);
+		runClient(port, "Q,s1.txt,s2.txt,2"+s1[1], false);
+		runClient(port, "Q,s1.txt,s2.txt,3"+s2[4], false);
+		runClient(port, "C,s1.txt,s2.txt,"+s1[9], true);
+		runClient(port, "C,s1.txt,s2.txt,#"+s2[1], false);
+		s.close();
+	}
 	
 	public static void main(String[] args) {
-//		if(testServer()) {
-		testDM();
-//			testBSCH();			
-//		}
+		if(testServer()) {
+			testDM();
+			testBSCH();			
+		}
 		System.out.println("done");
 	}
 
