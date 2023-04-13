@@ -27,7 +27,7 @@ public class MyServer {
         new Thread(this::startsServer).start();
     }
 
-    private void clientMethod(Socket client) {
+    private void clientMethod(Socket client) {//creates new clienthandler for every client, closes socket and stream when finished.
     	try {
         	Class<? extends ClientHandler> chClass = this.ch.getClass();
         	ClientHandler chNew = chClass.getDeclaredConstructor().newInstance();
@@ -38,10 +38,10 @@ public class MyServer {
             e.printStackTrace();
         }
     }
-    private void startsServer() {
+    private void startsServer() {//takes care of every client in a different thread with threadpool
         try {
             ServerSocket server = new ServerSocket(port);
-            server.setSoTimeout(1000);
+            server.setSoTimeout(1000);//waiting restarts every second
             while (!stop) {
                 try {
                     Socket client = server.accept();
@@ -60,10 +60,5 @@ public class MyServer {
         threadPool.shutdown();
     }
     
-    public interface FileSearcher {
-    	public boolean search(String word, String...fileNames);	
-    	public void stop();
-
-    }
 
 }

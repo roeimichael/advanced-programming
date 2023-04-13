@@ -13,7 +13,7 @@ public class Dictionary {
 	CacheManager exists,notExists;
 	BloomFilter bf;
 	private String[] fileNames;
-	ParIOSearcher searcher;
+	IOSearcher searcher;
 
 	public Dictionary(String...fileNames) {
 		this.fileNames=fileNames;
@@ -30,7 +30,7 @@ public class Dictionary {
 				s.close();
 			}catch(Exception e) {}
 		}		
-		searcher=new ParIOSearcher();
+		searcher=new IOSearcher();
 	}
 	
 	public boolean query(String word) {
@@ -58,56 +58,6 @@ public class Dictionary {
 		return doesExist;
 	}
 	
-	public void close() {
-		searcher.finalize();
-	}
- 
-	
-	public class ParIOSearcher implements FileSearcher{
 
-		ExecutorService es;	
-		
-		public ParIOSearcher() {		
-			es=Executors.newCachedThreadPool();
-		}
-		
-		public boolean search(String word, String...fileNames){
-			ArrayList<IOSearcher> searchers=new ArrayList<>();
-			ArrayList<Future<Boolean>> fs=new ArrayList<>();
-
-			for(String fn : fileNames) {
-				IOSearcher s = new IOSearcher();
-				searchers.add(s);
-				fs.add(es.submit(()->{				
-					boolean found = s.search(word, fn);
-					if(found) { 
-						searchers.forEach(srch->srch.stop());
-					}
-					return found;
-				}));
-			}
-			
-			boolean found = false;
-			for(Future<Boolean> f : fs) {
-				try {
-					found|=f.get();
-				} catch (InterruptedException | ExecutionException e) {}
-			}
-			stop();
-			es=Executors.newCachedThreadPool();
-			return found;
-		}
-		
-		public void stop() {
-			es.shutdownNow();
-		}
-		
-		@Override
-		public void finalize() {
-			es.shutdown();
-		}
-		
-		
-	}
 
 }
